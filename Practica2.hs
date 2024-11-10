@@ -32,8 +32,8 @@ divisores :: Int -> [Int]
 divisores n = [x | x <- [1..n] , (mod n x) == 0]
 
 conjunto :: Eq a => [a] -> [a]
-conjunto [] = []
-conjunto xs = conjuntoAux xs []
+conjunto []= [] 
+conjunto (x:xs) = x:[z | z <- (conjunto xs), z/=x]
 
 numerosPares :: [Int] -> [Int]
 numerosPares xs = [ x | x <- xs , mod x 2 == 0]
