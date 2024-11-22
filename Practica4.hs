@@ -11,8 +11,7 @@ longitud (Raiz _ izq der) = 1 + longitud(izq) + longitud(der)
 -------------------- EJERCICIO 2 --------------------
 profundidad :: Arbol a -> Int 
 profundidad (ArbolVacio) = 0
-profundidad (Raiz _ ArbolVacio ArbolVacio) = 1
-profundidad ( Raiz _ izq der ) = max (profundidad izq) (profundidad der) 
+profundidad (Raiz _ izq der) = 1 + max (profundidad izq) (profundidad der)
 
 -------------------- EJERCICIO 3 --------------------
 ancho :: Arbol a -> Int 
@@ -45,28 +44,16 @@ nivelesAux (Raiz r izq der) niveles = [r] : nivelesAux izq (nivelesAux der nivel
 minimo :: Ord a => Arbol a -> a 
 minimo ArbolVacio = error "El arbol vacío no tiene elementos"
 minimo (Raiz r ArbolVacio ArbolVacio) = r
-minimo (Raiz r izq der) = minimoAux (Raiz r izq der) r
- 
--- función auxiliar para minimo
-minimoAux :: Ord a => Arbol a -> a -> a
-minimoAux ArbolVacio x = x
-minimoAux (Raiz r ArbolVacio ArbolVacio) x = if x<r then x else r
-minimoAux (Raiz r izq der) x =
-	if x<r then min (minimoAux izq x) (minimoAux der x)  
-	else min (minimoAux izq r) (minimoAux der r)
+minimo (Raiz r ArbolVacio der) = min r (minimo der)
+minimo (Raiz r izq ArbolVacio) = min r (minimo izq)
+minimo (Raiz r izq der) = min r (min (minimo izq) (minimo der))
 
 maximo :: Ord a => Arbol a -> a 
 maximo ArbolVacio = error "El arbol vacío no tiene elementos"
 maximo (Raiz r ArbolVacio ArbolVacio) = r
-maximo (Raiz r izq der) = maximoAux (Raiz r izq der) r
-
--- función auxiliar para máximo
-maximoAux :: Ord a => Arbol a -> a -> a
-maximoAux ArbolVacio x = x
-maximoAux (Raiz r ArbolVacio ArbolVacio) x = if x>r then x else r
-maximoAux (Raiz r izq der) x = if x>r 
-	then min (maximoAux izq x) (maximoAux der x)  
-	else min (maximoAux izq r) (maximoAux der r)
+maximo (Raiz r ArbolVacio der) = max r (maximo der)
+maximo (Raiz r izq ArbolVacio) = max r (maximo izq)
+maximo (Raiz r izq der) = max r (max (maximo izq) (maximo der))
 
 -------------------- EJERCICIO 7 --------------------
 eliminar :: Ord a => Arbol a -> a -> Arbol a 
