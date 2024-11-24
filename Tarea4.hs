@@ -3,7 +3,6 @@
 import Data.Char --libreria para eliminar los espacios
 import System.IO --libreria para leer del main
 
-
 abcdario = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','Ñ','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 nums = [0..26]
 
@@ -15,7 +14,8 @@ funG c (x:xs) = if c == x then 0
 -- invG es g ^ -1 
 invG :: Int -> [Char] -> Char
 invG 0 (x:xs) = x
-invG i (x:xs) = (x:xs) !! i 
+invG i (x:xs) = if i<0 then error "indice incorrecto"
+	else invG (i-1) (x:xs)  
 
 -- la codificaion de p con la llave k
 codLetra :: Char -> Int -> Char
@@ -23,7 +23,7 @@ codLetra p k = invG (mod ((funG p nums) + k) 27) abcdario
 
 -- la decodificacion de c con la llave k
 decLetra :: Char -> Int -> Char
-decLetra c k = invG (((funG c nums) - k) mod 27) abcdario
+decLetra c k = invG (mod ((funG c nums) - k) 27) abcdario
 
 --funcion para eliminar espacios
 elimSpace :: String -> String
