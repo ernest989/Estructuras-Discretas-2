@@ -53,45 +53,35 @@ equivalencia (x :|: y) = equivalencia x :|: equivalencia y
 
 -------------------- EJERCICIO 4 --------------------
 interpretacion :: Formula -> [(Var,Bool)] -> Bool
-interpretacion f l = 
-    if iguales (variables f) (variables2 l) then evaluar (equivalencia f) l
-    else error "No todas las variables están definidas"
+interpretacion (Atom x) l = valor x l
+interpretacion (Neg f) l = not (interpretacion f l)
+interpretacion (x :&: y) l = (interpretacion x l) && (interpretacion y l)
+interpretacion (x :|: y) l = (interpretacion x l) || (interpretacion y l)
+interpretacion (x :=>: y) l = not (interpretacion x l) || (interpretacion y l)
+interpretacion (x :<=>: y) l = (interpretacion x l) == (interpretacion y l)
 
--- funciones auxiliares
--- variables2 obtiene las variables de una lista de pares 
-variables2 :: [(Var,Bool)] -> [Var]
-variables2 [] = []
-variables2 ((x,_): xs) = conjunto ( x : variables2 xs)
-
--- iguales recibe 2 listas y las ordena con sort para ver si tienen los mismos elementos
--- ya que pueden venir en distinto orden los elementos de variables y de variables2
-iguales :: Ord a => [a] -> [a] -> Bool
-iguales xs ys = sort xs == sort ys
-
--- evalua va sustituir la fórmula por la lógica de haskell
-evaluar :: Formula -> [(Var,Bool)] -> Bool
-evaluar (Atom x) l = valor x l
-evaluar (Neg f) l = not (evaluar f l)
-evaluar (x :&: y) l = (evaluar x l) && (evaluar y l)
-evaluar (x :|: y) l = (evaluar x l) || (evaluar y l)
-
+-- funcion auxiliar
 -- valor busca el valor de verdad de una variable en la lista de pares ordenados
--- nota : no hay caso con [] porque tendremos garantizado por iguales que siempre va estar la variable en los pares
 valor :: Var -> [(Var,Bool)] -> Bool
-valor x ((y, b):xs) 
-  | x == y = b 
-  | otherwise = valor x xs 
+valor x [] = error "No todas las variables estan definidas"
+valor x ((y, b):xs) = if x == y then b
+    else valor x xs  
 -----------------------------------------------------
 
 -------------------- EJERCICIO 5 --------------------
 combinaciones :: Formula -> [[(Var,Bool)]]
-combinaciones _ = undefined
+combinaciones f = combinacionesAux (variables f)
+
+--funcion auxiliar para tener acceso a la cabeza de a lista de vars 
+combinacionesAux :: [Var] -> [[(Var, Bool)]]
+combinacionesAux [] = [[]]
+combinacionesAux (x:xs) = [(x,True) : c | c <- combinacionesAux xs ] ++ [(x, False) : c | c <- combinacionesAux xs]
 -----------------------------------------------------
 
 -------------------- EJERCICIO 6 --------------------
 
 tablaDeVerdad :: Formula -> [([(Var,Bool)],Bool)]
-tablaDeVerdad _ = undefined
+tablaDeVerdad f = [(x, interpretacion f x) | x <- combinaciones f]
 -----------------------------------------------------
 
 
