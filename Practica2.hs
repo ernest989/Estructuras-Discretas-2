@@ -10,32 +10,50 @@ sumaLista [] = 0
 sumaLista (x:xs) = x + sumaLista xs
 
 agregaElemento :: [a] -> a -> Bool -> [a]
-agregaElemento l elem f = 
-	if f == True then elem : l
-	else l ++ [elem] 
+agregaElemento [] a _ = [a]
+agregaElemento xs a True = a : xs
+agregaElemento xs a False = xs ++ [a]
 
 maximoLista :: (Num a, Ord a) => [a] -> a
 maximoLista [] = error "La lista vacía no tiene máximo"
 maximoLista [a] = a
-maximoLista (x:xs) = max x (maximoLista xs)
+maximoLista [a,b] = if a > b then a else b
+maximoLista (x:y:xs) = if x > y then maximoLista (x:xs) else 
+    maximoLista (y:xs)
 
 indice :: [a] -> Int -> a
 indice [] _ = error "La lista vacía no tiene elementos"
-indice (x:xs) i =  
-    if i==0 then x
-    else if ( (0<=i) && (i< (longitud (x:xs))-1) ) then indice xs (i-1)
-    else error "el indice es incorrecto"
+indice (x:xs) 0 = x 
+indice (x:xs) i = if ( (0<=i) && (i< (longitud (x:xs))-1) ) then indice xs (i-1) 
+    else 
+        error "el indice es incorrecto"
 
 --------------- Listas por comprehensión ---------------
 
 divisores :: Int -> [Int]
+divisores 0 = error "el 0 tiene infinitos divisores"
 divisores n = [x | x <- [1..n] , (mod n x) == 0]
 
 conjunto :: Eq a => [a] -> [a]
-conjunto []= [] 
-conjunto (x:xs) = x:[z | z <- (conjunto xs), z/=x]
+conjunto [] = []
+conjunto xs = conjuntoAux xs []
+
+--funcion auxiliar para la recursión de cola de conjunto, recibe 2 listas y entrega una sin repetidos
+--la primera es la original y en la segunda lista se van añadiendo los elementos que no estan en la segunda
+conjuntoAux :: Eq a => [a] -> [a] -> [a]
+conjuntoAux [] xs = xs
+conjuntoAux (x:xs) ys = if elemento ys x then conjuntoAux xs ys
+    else conjuntoAux xs (ys ++ [x])
+
+--funcion auxiliar elemento, revisa si un elemento esta en una lista
+elemento :: Eq a => [a] -> a -> Bool
+elemento [] _ = False
+elemento [x] e = if (e == x) then True else False
+elemento (x:xs) e = if e==x then True
+    else elemento xs e
 
 numerosPares :: [Int] -> [Int]
+numerosPares [] = error "La lista vacía no tiene numeros"
 numerosPares xs = [ x | x <- xs , mod x 2 == 0]
 
 --main de prueba 
